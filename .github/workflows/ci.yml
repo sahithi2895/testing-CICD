@@ -19,7 +19,7 @@ jobs:
             -v ${{ github.workspace }}:/etc/newman \
             postman/newman:latest \
             run Day2-Practice.postman_collection.json \
-            -e "New Environment.postman_environment.json"
+            -e "New-Environment.postman_environment.json"
 
   cd:
     needs: ci
