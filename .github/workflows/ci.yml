@@ -34,8 +34,8 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/postman-tests:latest .
+          docker build -t ghcr.io/${{ github.actor }}/testing-cicd-postman-tests:latest .
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository }}/postman-tests:latest
+          docker push ghcr.io/${{ github.actor }}/testing-cicd-postman-tests:latest
