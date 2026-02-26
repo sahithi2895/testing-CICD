@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -19,7 +23,7 @@ jobs:
             -v ${{ github.workspace }}:/etc/newman \
             postman/newman:latest \
             run Day2-Practice.postman_collection.json \
-            -e "New-Environment.postman_environment.json"
+            -e New-Environment.postman_environment.json
 
   cd:
     needs: ci
@@ -29,13 +33,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.actor }}/testing-cicd-postman-tests:latest .
+          docker build -t ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest .
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/${{ github.actor }}/testing-cicd-postman-tests:latest
+          docker push ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest
