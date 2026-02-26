@@ -17,17 +17,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run Postman Tests (Docker) with HTML Report
+      # Build Docker image
+      - name: Build Test Image
+        run: docker build -t postman-tests .
+
+      # Run container & generate HTML report
+      - name: Run Postman Tests and Generate Report
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/etc/newman \
-            dannydainton/newman-reporter-htmlextra \
-            run Day2-Practice.postman_collection.json \
-            -e New-Environment.postman_environment.json \
-            -r htmlextra \
-            --reporter-htmlextra-export newman-report.html
+            postman-tests
 
+      # Upload HTML report even if tests fail
       - name: Upload HTML Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: newman-html-report
@@ -44,7 +47,7 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Build Docker Image
+      - name: Build Production Image
         run: |
           docker build -t ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest .
 
