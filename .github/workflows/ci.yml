@@ -1,3 +1,14 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -17,8 +28,8 @@ jobs:
                    -r htmlextra \
                    --reporter-htmlextra-export /etc/newman/newman-report.html"
 
-      - name: Show Files in Workspace
-        run: ls -la ${{ github.workspace }}
+      - name: Verify Report Exists
+        run: ls -la
 
       - name: Upload HTML Report
         if: always()
@@ -26,3 +37,20 @@ jobs:
         with:
           name: newman-html-report
           path: newman-report.html
+
+  cd:
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest .
+
+      - name: Push Docker Image
+        run: docker push ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest
