@@ -111,7 +111,7 @@
               "});\r",
               "\r",
               "//Validate data fields\r",
-              "let data = response.data;\r",
+              "data = response.data;\r",
               "pm.test(\"Data contain all data fields\", function(){\r",
               "    pm.expect(data).to.have.property(\"org_uuid\");\r",
               "    pm.expect(data).to.have.property(\"orgname\");\r",
