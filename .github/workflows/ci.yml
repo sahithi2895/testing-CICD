@@ -1,14 +1,3 @@
-name: CI-CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -17,21 +6,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build Test Docker Image
-        run: docker build -t postman-tests .
-
       - name: Run Postman Tests and Generate HTML Report
         run: |
           docker run --rm \
-            -v ${{ github.workspace }}:/etc/newman \
-            postman-tests \
-            newman run Day2-Practice.postman_collection.json \
-            -e New-Environment.postman_environment.json \
-            -r htmlextra \
-            --reporter-htmlextra-export newman-report.html
+            -v "${{ github.workspace }}:/etc/newman" \
+            postman/newman:alpine \
+            sh -c "npm install -g newman-reporter-htmlextra && \
+                   newman run Day2-Practice.postman_collection.json \
+                   -e New-Environment.postman_environment.json \
+                   -r htmlextra \
+                   --reporter-htmlextra-export /etc/newman/newman-report.html"
 
-      - name: Confirm Report File Exists
-        run: ls -la
+      - name: Show Files in Workspace
+        run: ls -la ${{ github.workspace }}
 
       - name: Upload HTML Report
         if: always()
@@ -39,20 +26,3 @@ jobs:
         with:
           name: newman-html-report
           path: newman-report.html
-
-  cd:
-    needs: ci
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-      - name: Build Production Image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest .
-
-      - name: Push Docker Image
-        run: docker push ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest
