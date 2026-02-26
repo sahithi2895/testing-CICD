@@ -17,13 +17,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run Postman Tests (Docker)
+      - name: Run Postman Tests (Docker) with HTML Report
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/etc/newman \
-            postman/newman:latest \
+            dannydainton/newman-reporter-htmlextra \
             run Day2-Practice.postman_collection.json \
-            -e New-Environment.postman_environment.json
+            -e New-Environment.postman_environment.json \
+            -r htmlextra \
+            --reporter-htmlextra-export newman-report.html
+
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-html-report
+          path: newman-report.html
 
   cd:
     needs: ci
