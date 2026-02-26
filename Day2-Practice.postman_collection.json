@@ -2,9 +2,7 @@
   "info": {
     "_postman_id": "f01d4646-9f88-4135-8a6e-34d0d87e4d1f",
     "name": "Day2-Practice",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46729114",
-    "_collection_link": "https://go.postman.co/collection/46729114-f01d4646-9f88-4135-8a6e-34d0d87e4d1f?source=collection_link"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -13,53 +11,40 @@
         {
           "listen": "test",
           "script": {
-            "exec": [
-              "let response = pm.response.json();\r",
-              "\r",
-              "// Store variables\r",
-              "pm.environment.set(\"Authorization\", response.data.Authorization);\r",
-              "pm.environment.set(\"org_uuid\", response.data.org_uuid);\r",
-              "pm.environment.set(\"user_uuid\", response.data.user_uuid);\r",
-              "pm.environment.set(\"role_uuid\", response.data.role_uuid);\r",
-              "\r",
-              "// Print them in Postman Console\r",
-              "console.log(\"Authorization:\", pm.environment.get(\"Authorization\"));\r",
-              "console.log(\"org_uuid:\", pm.environment.get(\"org_uuid\"));\r",
-              "console.log(\"user_uuid:\", pm.environment.get(\"user_uuid\"));\r",
-              "console.log(\"role_uuid:\", pm.environment.get(\"role_uuid\"));\r",
-              "\r",
-              "\r",
-              "pm.test(\"status code is 200\", function(){\r",
-              "    pm.response.to.have.status(200)\r",
-              "}\r",
-              ");\r",
-              "//top level keys\r",
-              "pm.test(\"response having top level keys\", function(){\r",
-              "    pm.expect(response).to.have.property(\"success\");\r",
-              "    pm.expect(response).to.have.property(\"message\");\r",
-              "    pm.expect(response).to.have.property(\"data\");\r",
-              "    pm.expect(response).to.have.property(\"status_code\")\r",
-              "\r",
-              "});\r",
-              "\r",
-              "pm.test(\"All data fields exist\", function () {\r",
-              "    let data = response.data;\r",
-              "\r",
-              "    pm.expect(data).to.have.property(\"Authorization\");\r",
-              "    pm.expect(data).to.have.property(\"email\");\r",
-              "    pm.expect(data).to.have.property(\"last_login_time\");\r",
-              "    pm.expect(data).to.have.property(\"mobile_number\");\r",
-              "    pm.expect(data).to.have.property(\"name\");\r",
-              "    pm.expect(data).to.have.property(\"org_uuid\");\r",
-              "    pm.expect(data).to.have.property(\"role_name\");\r",
-              "    pm.expect(data).to.have.property(\"role_uuid\");\r",
-              "    pm.expect(data).to.have.property(\"user_uuid\");\r",
-              "    pm.expect(data).to.have.property(\"show_user_guide\");\r",
-              "});"
-            ],
             "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "exec": [
+              "let response = pm.response.json();",
+              "",
+              "pm.environment.set('Authorization', response.data.Authorization);",
+              "pm.environment.set('org_uuid', response.data.org_uuid);",
+              "pm.environment.set('user_uuid', response.data.user_uuid);",
+              "pm.environment.set('role_uuid', response.data.role_uuid);",
+              "",
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has required top level keys', function () {",
+              "    pm.expect(response).to.have.property('success');",
+              "    pm.expect(response).to.have.property('message');",
+              "    pm.expect(response).to.have.property('data');",
+              "    pm.expect(response).to.have.property('status_code');",
+              "});",
+              "",
+              "pm.test('All login data fields exist', function () {",
+              "    let data = response.data;",
+              "    pm.expect(data).to.have.property('Authorization');",
+              "    pm.expect(data).to.have.property('email');",
+              "    pm.expect(data).to.have.property('last_login_time');",
+              "    pm.expect(data).to.have.property('mobile_number');",
+              "    pm.expect(data).to.have.property('name');",
+              "    pm.expect(data).to.have.property('org_uuid');",
+              "    pm.expect(data).to.have.property('role_name');",
+              "    pm.expect(data).to.have.property('role_uuid');",
+              "    pm.expect(data).to.have.property('user_uuid');",
+              "    pm.expect(data).to.have.property('show_user_guide');",
+              "});"
+            ]
           }
         }
       ],
@@ -68,7 +53,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"loginId\": \"sahithi.b@smartbots.ai\",\r\n    \"password\": \"Sahithi@123\"\r\n}",
+          "raw": "{\n  \"loginId\": \"sahithi.b@smartbots.ai\",\n  \"password\": \"Sahithi@123\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -78,19 +63,10 @@
         "url": {
           "raw": "https://devbackend.smartbots.us/identity/auth/login",
           "protocol": "https",
-          "host": [
-            "devbackend",
-            "smartbots",
-            "us"
-          ],
-          "path": [
-            "identity",
-            "auth",
-            "login"
-          ]
+          "host": ["devbackend", "smartbots", "us"],
+          "path": ["identity", "auth", "login"]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "view org details",
@@ -98,29 +74,25 @@
         {
           "listen": "test",
           "script": {
-            "exec": [
-              "let response = pm.response.json();\r",
-              "pm.test(\"Status code is 200\", function(){\r",
-              "    pm.response.to.have.status(200)\r",
-              "});\r",
-              "\r",
-              "//validate top level keys\r",
-              "pm.test(\"Response contain top level keys\", function(){\r",
-              "    pm.expect(response).to.have.keys(\"success\", \"message\", \"data\", \"status_code\")\r",
-              "\r",
-              "});\r",
-              "\r",
-              "//Validate data fields\r",
-              "data = response.data;\r",
-              "pm.test(\"Data contain all data fields\", function(){\r",
-              "    pm.expect(data).to.have.property(\"org_uuid\");\r",
-              "    pm.expect(data).to.have.property(\"orgname\");\r",
-              "    pm.expect(data).to.have.property(\"country\")\r",
-              "})"
-            ],
             "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "exec": [
+              "let response = pm.response.json();",
+              "",
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response contain top level keys', function () {",
+              "    pm.expect(response).to.have.keys('success', 'message', 'data', 'status_code');",
+              "});",
+              "",
+              "pm.test('Data contain all data fields', function () {",
+              "    let data = response.data;",
+              "    pm.expect(data).to.have.property('org_uuid');",
+              "    pm.expect(data).to.have.property('orgname');",
+              "    pm.expect(data).to.have.property('country');",
+              "});"
+            ]
           }
         }
       ],
@@ -135,7 +107,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"org_id\": \"{{org_uuid}}\"\r\n}",
+          "raw": "{\n  \"org_id\": \"{{org_uuid}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -145,19 +117,10 @@
         "url": {
           "raw": "https://devbackend.smartbots.us/identity/organizations/view",
           "protocol": "https",
-          "host": [
-            "devbackend",
-            "smartbots",
-            "us"
-          ],
-          "path": [
-            "identity",
-            "organizations",
-            "view"
-          ]
+          "host": ["devbackend", "smartbots", "us"],
+          "path": ["identity", "organizations", "view"]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "Baseactions",
@@ -165,14 +128,12 @@
         {
           "listen": "test",
           "script": {
-            "exec": [
-              "pm.test(\"Status code is 200\", function () {\r",
-              "    pm.response.to.have.status(200);\r",
-              "});"
-            ],
             "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
           }
         }
       ],
@@ -187,7 +148,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"org_id\": \"{{org_uuid}}\",\r\n    \"role_id\": \"{{role_uuid}}\"\r\n}",
+          "raw": "{\n  \"org_id\": \"{{org_uuid}}\",\n  \"role_id\": \"{{role_uuid}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -197,19 +158,10 @@
         "url": {
           "raw": "https://devbackend.smartbots.us/identity/role-permissions/base-actions",
           "protocol": "https",
-          "host": [
-            "devbackend",
-            "smartbots",
-            "us"
-          ],
-          "path": [
-            "identity",
-            "role-permissions",
-            "base-actions"
-          ]
+          "host": ["devbackend", "smartbots", "us"],
+          "path": ["identity", "role-permissions", "base-actions"]
         }
-      },
-      "response": []
+      }
     }
   ]
 }
