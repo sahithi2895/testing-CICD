@@ -17,16 +17,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Build Docker image
+      # Build Docker image for running tests
       - name: Build Test Image
         run: docker build -t postman-tests .
 
-      # Run container & generate HTML report
-      - name: Run Postman Tests and Generate Report
+      # Run container and mount workspace so report is saved
+      - name: Run Postman Tests
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/etc/newman \
             postman-tests
+
+      # Debug step (optional but useful)
+      - name: Verify Report Exists
+        run: ls -la
 
       # Upload HTML report even if tests fail
       - name: Upload HTML Report
