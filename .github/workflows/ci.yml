@@ -1,4 +1,4 @@
-name: Run Postman Collection
+name: CI-CD Pipeline
 
 on:
   push:
@@ -6,22 +6,36 @@ on:
       - main
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install Newman
-        run: npm install -g newman
-
-      - name: Run Postman Collection
+      - name: Run Postman Tests (Docker)
         run: |
-          newman run Day2-Practice.postman_collection.json \
-          -e "New Environment.postman_environment.json"
+          docker run --rm \
+            -v ${{ github.workspace }}:/etc/newman \
+            postman/newman:latest \
+            run Day2-Practice.postman_collection.json \
+            -e "New Environment.postman_environment.json"
+
+  cd:
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/postman-tests:latest .
+
+      - name: Push Docker Image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/postman-tests:latest
