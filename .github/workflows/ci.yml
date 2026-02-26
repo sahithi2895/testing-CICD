@@ -17,22 +17,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Build Docker image for running tests
-      - name: Build Test Image
+      - name: Build Test Docker Image
         run: docker build -t postman-tests .
 
-      # Run container and mount workspace so report is saved
-      - name: Run Postman Tests
+      - name: Run Postman Tests and Generate HTML Report
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/etc/newman \
-            postman-tests
+            postman-tests \
+            newman run Day2-Practice.postman_collection.json \
+            -e New-Environment.postman_environment.json \
+            -r htmlextra \
+            --reporter-htmlextra-export newman-report.html
 
-      # Debug step (optional but useful)
-      - name: Verify Report Exists
+      - name: Confirm Report File Exists
         run: ls -la
 
-      # Upload HTML report even if tests fail
       - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -52,9 +52,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Build Production Image
-        run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest .
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest .
 
       - name: Push Docker Image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest
+        run: docker push ghcr.io/${{ github.repository_owner }}/testing-cicd-postman-tests:latest
